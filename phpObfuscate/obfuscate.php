@@ -133,12 +133,17 @@ function my_sort(&$arr)
 	@usort($arr, compare_length);
 }
 
-function obfuscate($source)
+function get_source($path)
 {
-$fh = fopen($source, "r");
+$fh = fopen($_SERVER['DOCUMENT_ROOT'].$path, "r");
 $contents = "";
-$contents = fread($fh, filesize($source));	
+$contents = fread($fh, filesize($_SERVER['DOCUMENT_ROOT'].$path));	
 fclose($fh);
+return $contents;
+}
+
+function replace_variable_names($contents)
+{
 $variables = array();
 $startChar = 0;
 $varfound = -1;
@@ -182,11 +187,22 @@ foreach ($variables as $index => $variable_name)
 	{
 		$contents = my_str_replace($contents, $variable_name,  '$'.repeat_chars(JOKER, $index+3));
 	};
+return $contents;	
+}
 
-$contents = replace_function_names($contents);
-$contents = replace_class_names($contents);
-$fh = fopen($source.".src", "w+");
+function save_obfuscated($source, $contents)
+{
+$fh = fopen($_SERVER['DOCUMENT_ROOT'].$source.".src", "w+");
 fwrite($fh, $contents);
 fclose($fh);
+}
+
+function obfuscate($source)
+{
+$contents = get_source($source);
+$contents = replace_variable_names($contents);
+$contents = replace_function_names($contents);
+$contents = replace_class_names($contents);
+save_obfuscated($source, $contents);
 }
 ?>

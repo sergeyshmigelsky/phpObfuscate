@@ -1,6 +1,7 @@
 <?php
 define('JOKER', 'v');
 define('FUNCY', 'f');
+define('CLS', 'c');
 function repeat_chars($char, $count)
 {
  $result = "";
@@ -67,6 +68,34 @@ function replace_function_names($contents)
 	}; 
 	return $result;
 }
+
+
+function replace_class_names($contents)
+{
+	 $result = $contents;
+	 $l = strlen($result);
+	 $startChar = 0;
+	 $func_names = array();
+	 while ($startChar<$l)
+	 {
+		$pos = strpos($result, 'class ', $startChar);
+		if ($pos === false) {break;} else {$startChar = $pos+1;};
+		$pos2 = strpos($result, '{', $pos);
+		$f = trim(substr($result, $pos, $pos2-$pos));
+		echo $f ."<br/>";
+		$func_names[] = substr($f, strpos($f, 'class ')+strlen('class '));
+		$startChar++;
+	 };
+	 array_unique($func_names);
+	 my_sort($func_names);
+	
+	foreach ($func_names as $index => $func_name)
+	{
+		$result = my_str_replace($result, $func_name,  repeat_chars(CLS, $index+3));
+	}; 
+	return $result;
+}
+
 
 function not_global_array($name)
 {
@@ -141,6 +170,7 @@ foreach ($variables as $index => $variable_name)
 	};
 
 $contents = replace_function_names($contents);
+$contents = replace_class_names($contents);
 $fh = fopen($source.".src", "w+");
 fwrite($fh, $contents);
 fclose($fh);

@@ -1,8 +1,8 @@
  <?php
+ define('test_count', 5);
  require_once($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/obfuscate.php');
- obfuscate('/phpObfuscate/test.php');
- obfuscate('/phpObfuscate/test2.php');
- obfuscate('/phpObfuscate/test3.php');
- obfuscate('/phpObfuscate/test4.php');
- 
+ for ($i=1; $i<=test_count;$i++)
+ {
+ obfuscate("/phpObfuscate/test$i.php");
+ };
  ?>

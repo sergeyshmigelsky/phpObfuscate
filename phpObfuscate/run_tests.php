@@ -4,4 +4,5 @@
  obfuscate('/phpObfuscate/test2.php');
  obfuscate('/phpObfuscate/test3.php');
  obfuscate('/phpObfuscate/test4.php');
+ 
  ?>

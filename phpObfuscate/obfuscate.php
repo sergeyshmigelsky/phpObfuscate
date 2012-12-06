@@ -2,6 +2,7 @@
 define('JOKER', 'v');
 define('FUNCY', 'f');
 define('CLS', 'c');
+define('OBF_LOG', true);
 function repeat_chars($char, $count)
 {
  $result = "";
@@ -72,6 +73,16 @@ function replace_function_names($contents)
 	{
 		$result = my_str_replace($result, $func_name,  repeat_chars(FUNCY, $index+3));
 	}; 
+	
+	if (OBF_LOG)
+{
+echo '<h1>Functions</h1>';
+foreach ($func_names as $index=>$func)
+{
+ echo $func."<br/>";
+};	
+}
+	
 	return $result;
 }
 
@@ -81,7 +92,7 @@ function replace_class_names($contents)
 	 $result = $contents;
 	 $l = strlen($result);
 	 $startChar = 0;
-	 $func_names = array();
+	 $class_names = array();
 	 while ($startChar<$l)
 	 {
 		$pos = strpos($result, 'class ', $startChar);
@@ -89,16 +100,26 @@ function replace_class_names($contents)
 		$pos2 = strpos($result, '{', $pos);
 		$f = trim(substr($result, $pos, $pos2-$pos));
 		// echo $f ."<br/>";
-		$func_names[] = substr($f, strpos($f, 'class ')+strlen('class '));
+		$class_names[] = substr($f, strpos($f, 'class ')+strlen('class '));
 		$startChar++;
 	 };
-	 array_unique($func_names);
-	 my_sort($func_names);
+	 array_unique($class_names);
+	 my_sort($class_names);
 	
-	foreach ($func_names as $index => $func_name)
+	foreach ($class_names as $index => $class)
 	{
-		$result = my_str_replace($result, $func_name,  repeat_chars(CLS, $index+3));
+		$result = my_str_replace($result, $class,  repeat_chars(CLS, $index+3));
 	}; 
+	
+	if (OBF_LOG)
+{
+echo '<h1>Classes</h1>';
+foreach ($class_names as $index=>$class)
+{
+ echo $class."<br/>";
+};	
+}
+	
 	return $result;
 }
 
@@ -135,6 +156,10 @@ function my_sort(&$arr)
 
 function get_source($path)
 {
+	if (OBF_LOG)
+{
+echo "<h3>Get source from $path</h3>";
+};
 $fh = fopen($_SERVER['DOCUMENT_ROOT'].$path, "r");
 $contents = "";
 $contents = fread($fh, filesize($_SERVER['DOCUMENT_ROOT'].$path));	
@@ -172,12 +197,14 @@ while ($startChar<=strlen($contents))
 };
 my_sort($variables);
 $variables = array_unique($variables);
-/*
+if (OBF_LOG)
+{
+echo '<h1>Variables</h1>';
 foreach ($variables as $index=>$variable)
 {
  echo $variable."<br/>";
 };	
-*/
+}
 foreach ($variables as $index => $variable_name)
 	{
 		$contents = my_str_replace($contents, '->'.substr($variable_name, 1),  '->'.repeat_chars(JOKER, $index+3));
@@ -192,17 +219,22 @@ return $contents;
 
 function save_obfuscated($source, $contents)
 {
-$fh = fopen($_SERVER['DOCUMENT_ROOT'].$source.".src", "w+");
+$dest = $_SERVER['DOCUMENT_ROOT'].$source.".src";
+$fh = fopen($dest, "w+");
 fwrite($fh, $contents);
 fclose($fh);
+if (OBF_LOG)
+{
+echo "<h3>Saved to $dest</h3>";
+};
 }
 
 function obfuscate($source)
 {
 $contents = get_source($source);
-$contents = replace_variable_names($contents);
-$contents = replace_function_names($contents);
 $contents = replace_class_names($contents);
+$contents = replace_function_names($contents);
+$contents = replace_variable_names($contents);
 save_obfuscated($source, $contents);
 }
 ?>

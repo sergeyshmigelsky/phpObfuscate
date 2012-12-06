@@ -58,7 +58,11 @@ function replace_function_names($contents)
 		$pos2 = strpos($result, '(', $pos);
 		$f = substr($result, $pos, $pos2-$pos);
 		// echo $f ."<br/>";
-		$func_names[] = substr($f, strpos($f, 'function ')+strlen('function '));
+		$f = substr($f, strpos($f, 'function ')+strlen('function '));
+		if (not_special_function($f))
+		{
+		$func_names[] =  $f;
+		}
 		$startChar++;
 	 };
 	 array_unique($func_names);
@@ -98,6 +102,13 @@ function replace_class_names($contents)
 	return $result;
 }
 
+function not_special_function($func)
+{
+  $result = true;
+  $result = (strpos($func,'_construct')===false);
+  $result = $result && (strpos($func,'_destruct')===false);
+  return $result;
+}
 
 function not_global_array($name)
 {

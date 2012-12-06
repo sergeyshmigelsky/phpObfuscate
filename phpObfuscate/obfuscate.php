@@ -1,5 +1,6 @@
 <?php
-define('JOKER', '†');
+define('JOKER', 'v');
+define('FUNCY', 'f');
 function repeat_chars($char, $count)
 {
  $result = "";
@@ -35,8 +36,35 @@ function has_delimeters($string)
 	for ($i = 0; $i<$l; $i++)
 	{
 		$char = substr($string, $i, 1);
-		if ((is_delimeter($char)) || ($char == "'")) {$result = true;break;};
+		if ((is_delimeter($char)) || ($char == "'") || ($char == ":") || ($char == "-") ) 
+		{$result = true;break;};
 	};
+	return $result;
+}
+
+function replace_function_names($contents)
+{
+	 $result = $contents;
+	 $l = strlen($result);
+	 $startChar = 0;
+	 $func_names = array();
+	 while ($startChar<$l)
+	 {
+		$pos = strpos($result, 'function ', $startChar);
+		if ($pos === false) {break;} else {$startChar = $pos+1;};
+		$pos2 = strpos($result, '(', $pos);
+		$f = substr($result, $pos, $pos2-$pos);
+		echo $f ."<br/>";
+		$func_names[] = substr($f, strpos($f, 'function ')+strlen('function '));
+		$startChar++;
+	 };
+	 array_unique($func_names);
+	 my_sort($func_names);
+	
+	foreach ($func_names as $index => $func_name)
+	{
+		$result = my_str_replace($result, $func_name,  repeat_chars(FUNCY, $index+3));
+	}; 
 	return $result;
 }
 
@@ -104,14 +132,22 @@ foreach ($variables as $index=>$variable)
 
 foreach ($variables as $index => $variable_name)
 	{
+		$contents = my_str_replace($contents, '->'.substr($variable_name, 1),  '->'.repeat_chars(JOKER, $index+3));
+	};	
+
+foreach ($variables as $index => $variable_name)
+	{
 		$contents = my_str_replace($contents, $variable_name,  '$'.repeat_chars(JOKER, $index+3));
 	};
 
+$contents = replace_function_names($contents);
 $fh = fopen($source.".src", "w+");
 fwrite($fh, $contents);
 fclose($fh);
 }
 
 obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test.php');
+obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test2.php');
+obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test3.php');
 
 ?>

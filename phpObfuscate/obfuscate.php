@@ -23,6 +23,7 @@ function my_str_replace($str, $pattern, $replacement)
 function is_delimeter($char)
 {			
 	$result = (($char == '}') || ($char ==')') || ($char == '+') || ($char == '['));
+	$result = $result || (($char == '(') || ($char ==']') || ($char == '!'));
 	$result = $result || (($char == ';') || ($char ==',') || ($char == ' '));
 	$result = $result || (($char == '=') || ($char =='*') ||($char == '/'));
 	$result = $result || (($char == '%') || ($char == "\'") || ($char == "."));
@@ -176,8 +177,9 @@ fwrite($fh, $contents);
 fclose($fh);
 }
 
-obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test.php');
-obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test2.php');
-obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test3.php');
+// Uncomment to test 
+// obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test.php');
+// obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test2.php');
+// obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test3.php');
 
 ?>

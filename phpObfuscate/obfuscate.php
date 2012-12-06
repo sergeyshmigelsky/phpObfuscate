@@ -28,6 +28,7 @@ function is_delimeter($char)
 	$result = $result || (($char == '=') || ($char =='*') ||($char == '/'));
 	$result = $result || (($char == '%') || ($char == "\'") || ($char == "."));
 	$result = $result || (($char == '>') || ($char == '<') || ($char == "\""));
+	$result = $result || (($char == '*') || ($char == '@') || ($char == "#"));
 	return $result;
 }
 
@@ -56,7 +57,7 @@ function replace_function_names($contents)
 		if ($pos === false) {break;} else {$startChar = $pos+1;};
 		$pos2 = strpos($result, '(', $pos);
 		$f = substr($result, $pos, $pos2-$pos);
-		echo $f ."<br/>";
+		// echo $f ."<br/>";
 		$func_names[] = substr($f, strpos($f, 'function ')+strlen('function '));
 		$startChar++;
 	 };
@@ -83,7 +84,7 @@ function replace_class_names($contents)
 		if ($pos === false) {break;} else {$startChar = $pos+1;};
 		$pos2 = strpos($result, '{', $pos);
 		$f = trim(substr($result, $pos, $pos2-$pos));
-		echo $f ."<br/>";
+		// echo $f ."<br/>";
 		$func_names[] = substr($f, strpos($f, 'class ')+strlen('class '));
 		$startChar++;
 	 };
@@ -155,11 +156,12 @@ while ($startChar<=strlen($contents))
 };
 my_sort($variables);
 $variables = array_unique($variables);
+/*
 foreach ($variables as $index=>$variable)
 {
  echo $variable."<br/>";
 };	
-
+*/
 foreach ($variables as $index => $variable_name)
 	{
 		$contents = my_str_replace($contents, '->'.substr($variable_name, 1),  '->'.repeat_chars(JOKER, $index+3));
@@ -176,10 +178,4 @@ $fh = fopen($source.".src", "w+");
 fwrite($fh, $contents);
 fclose($fh);
 }
-
-// Uncomment to test 
-// obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test.php');
-// obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test2.php');
-// obfuscate($_SERVER['DOCUMENT_ROOT'].'/phpObfuscate/test3.php');
-
 ?>

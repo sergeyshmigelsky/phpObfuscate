@@ -57,8 +57,7 @@ function replace_function_names($contents)
 		$pos = strpos($result, 'function ', $startChar);
 		if ($pos === false) {break;} else {$startChar = $pos+1;};
 		$pos2 = strpos($result, '(', $pos);
-		$f = substr($result, $pos, $pos2-$pos);
-		// echo $f ."<br/>";
+		$f = substr($result, $pos, $pos2-$pos);		
 		$f = substr($f, strpos($f, 'function ')+strlen('function '));
 		if (not_special_function($f))
 		{
@@ -99,8 +98,13 @@ function replace_class_names($contents)
 		if ($pos === false) {break;} else {$startChar = $pos+1;};
 		$pos2 = strpos($result, '{', $pos);
 		$f = trim(substr($result, $pos, $pos2-$pos));
-		// echo $f ."<br/>";
-		$class_names[] = substr($f, strpos($f, 'class ')+strlen('class '));
+		$f = substr($f, strpos($f, 'class ')+strlen('class '));
+		$pos3 = strpos($f, ' ', 0);		
+		if ($pos3>0)
+		{
+			$f = substr($f, 0, $pos3);
+		};		
+		$class_names[] = $f;
 		$startChar++;
 	 };
 	 array_unique($class_names);

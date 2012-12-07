@@ -233,12 +233,92 @@ echo "<h3>Saved to $dest</h3>";
 };
 }
 
+function remove_break_lines($contents)
+{
+	$result = $contents;
+	$l = strlen($contents);
+	for ($i=0;$i<$l;$i++)
+	{
+		$result = str_replace(array("\r","\n"), '  ', $result);
+	};
+	return $result;
+}
+
+function remove_comments($contents)
+{
+	$result = $contents;
+	$l = strlen($result);
+	$startChar = 0;
+	if (OBF_LOG)
+		{
+		echo 'Search one-line comments<br/>';
+		};		
+	while ($startChar<strlen($result))
+	{
+		$pos = strpos($result, '//', $startChar);		
+		if ($pos>0)
+		{
+		if (OBF_LOG)
+		{
+		echo '<i>Find comment // at ' . $pos . "</i><br/>";
+		};		
+		$pos2 = strpos($result, "\r\n", $pos);		
+		if (OBF_LOG)
+		{
+		echo '<i>Find end of comment at ' . $pos2 . "</i><br/>";
+		};		
+		if ($pos2>0)
+			{
+				if (OBF_LOG)
+				{
+				echo 'Remove text: <br/><pre><code>' . substr($result, $pos, $pos2-$pos) . "</code></pre><br/>";
+				};				
+				$result = str_replace(substr($result, $pos, $pos2-$pos), '  ', $result);				
+			};
+		};
+		$startChar++;
+	};
+	if (OBF_LOG)
+		{
+		echo 'Search multiline comments<br/>';
+		};		
+	$startChar = 0;
+	while ($startChar<strlen($result))
+	{
+		$pos = strpos($result, '/*', $startChar);		
+		if ($pos>0)
+		{
+		if (OBF_LOG)
+		{
+		echo '<i>Find comment /* at ' . $pos . "</i><br/>";
+		};
+		$pos2 = strpos($result, "*/", $pos);		
+		if (OBF_LOG)
+		{
+		echo '<i>Find end of comment at ' . $pos2 . "</i><br/>";
+		};		
+		if ($pos2>0)
+			{
+				if (OBF_LOG)
+				{
+				echo 'Remove text: <br/><pre><code>' . substr($result, $pos, $pos2-$pos+2) . "</code></pre><br/>";
+				};				
+				$result = str_replace(substr($result, $pos, $pos2-$pos+2), '  ', $result);				
+			};
+		};
+		$startChar++;		
+	};
+	return $result;
+}
+
 function obfuscate($source)
 {
 $contents = get_source($source);
+$contents = remove_comments($contents);
 $contents = replace_class_names($contents);
 $contents = replace_function_names($contents);
 $contents = replace_variable_names($contents);
+$contents = remove_break_lines($contents);
 save_obfuscated($source, $contents);
 }
 ?>

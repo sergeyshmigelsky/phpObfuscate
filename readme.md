@@ -43,3 +43,5 @@ $vvvv->ff(10);
 $vvvv->fff(2);
 echo $vvvv->vv;
 </code></pre>
+
+Also, script will remove breaklines and comments

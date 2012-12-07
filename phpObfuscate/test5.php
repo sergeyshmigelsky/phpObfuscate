@@ -8,6 +8,13 @@ function setTitle($title)
 {
     $this->Title = $title;
 }
+
+/*
+
+Long comments
+(test removing comments)
+
+*/
  
 function setContent($content) 
 {
